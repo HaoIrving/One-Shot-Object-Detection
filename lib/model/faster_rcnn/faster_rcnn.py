@@ -20,10 +20,12 @@ import pdb
 from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 from model.utils.net_utils import *
 
+from cam import CAM
+
 class match_block(nn.Module):
     def __init__(self, inplanes):
         super(match_block, self).__init__()
-
+        self.cam = CAM() ##
         self.sub_sample = False
 
         self.in_channels = inplanes
@@ -81,7 +83,7 @@ class match_block(nn.Module):
 
 
         #####################################find aim image similar object ####################################################
-
+'''
         d_x = self.g(detect).view(batch_size, self.inter_channels, -1)
         d_x = d_x.permute(0, 2, 1).contiguous()
 
@@ -115,7 +117,9 @@ class match_block(nn.Module):
         non_det = non_det.view(batch_size, self.inter_channels, height_d, width_d)
         non_det = self.Q(non_det)
         non_det = non_det + detect
-
+'''
+        ############################ CAM ################################
+        non_aim, non_det = self.cam(aim, det)
         ##################################### Response in chaneel weight ####################################################
 
         c_weight = self.ChannelGate(non_aim)
