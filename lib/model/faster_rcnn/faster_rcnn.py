@@ -119,7 +119,9 @@ class match_block(nn.Module):
         non_det = non_det + detect
 '''
         ############################ CAM ################################
-        non_aim, non_det = self.cam(aim, det)
+    
+        non_aim, non_det = self.cam(aim, detect)
+        
         ##################################### Response in chaneel weight ####################################################
 
         c_weight = self.ChannelGate(non_aim)
