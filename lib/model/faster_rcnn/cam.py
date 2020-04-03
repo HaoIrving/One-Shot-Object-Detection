@@ -56,8 +56,8 @@ class CAM(nn.Module):
     def forward(self, f1, f2):
         f1 = f1.unsqueeze(1)
         f2 = f2.unsqueeze(1)
-        b, n1, c, h, w = f1.size() # n1==1
-        n2 = f2.size(1) # n2==1
+        b, n1, c, h1, w1 = f1.size() # n1==1
+        b, n2, c, h2, w2 = f2.size() # n2==1
 
         f1 = f1.view(b, n1, c, -1) 
         f2 = f2.view(b, n2, c, -1)
@@ -75,8 +75,8 @@ class CAM(nn.Module):
         a2 = self.get_attention(a2) 
 
         f1 = f1.unsqueeze(2) * a1.unsqueeze(3)
-        f1 = f1.view(b, c, h, w)
+        f1 = f1.view(b, c, h1, w1)
         f2 = f2.unsqueeze(1) * a2.unsqueeze(3)
-        f2 = f2.view(b, c, h, w)
+        f2 = f2.view(b, c, h2, w2)
 
         return f1, f2
