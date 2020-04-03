@@ -41,10 +41,12 @@ class CAM(nn.Module):
         input_a = a
 
         a = a.mean(3) 
+        '''
         a = a.transpose(1, 3) 
         a = F.relu(self.conv1(a))
         a = self.conv2(a) 
         a = a.transpose(1, 3)
+        '''
         a = a.unsqueeze(3) 
         
         a = torch.mean(input_a * a, -1) 
@@ -73,8 +75,8 @@ class CAM(nn.Module):
         a2 = self.get_attention(a2) 
 
         f1 = f1.unsqueeze(2) * a1.unsqueeze(3)
-        f1 = f1.view(b, n1, n2, c, h, w).squeeze(1).squeeze(1)
+        f1 = f1.view(b, c, h, w)
         f2 = f2.unsqueeze(1) * a2.unsqueeze(3)
-        f2 = f2.view(b, n1, n2, c, h, w).squeeze(1).squeeze(1)
+        f2 = f2.view(b, c, h, w)
 
         return f1, f2
