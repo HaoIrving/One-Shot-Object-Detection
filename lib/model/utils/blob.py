@@ -64,7 +64,7 @@ def prep_im_for_blob(im, pixel_means, target_size, max_size):
 
 def crop(image, purpose, size):
 
-    # h, w, c = image.shape
+    h, w, c = image.shape
 
     # add_h = int(purpose[4]-purpose[2])/5
     # add_w = int(purpose[3]-purpose[1])/5
