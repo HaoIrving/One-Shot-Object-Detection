@@ -20,7 +20,7 @@ import pdb
 from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 from model.utils.net_utils import *
 
-from cam import CAM
+from .cam import CAM
 
 class match_block(nn.Module):
     def __init__(self, inplanes):
