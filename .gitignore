@@ -8,6 +8,7 @@
 
 ## Ignore Folder 
 
+/data
 logs/
 test_img/
 models/
