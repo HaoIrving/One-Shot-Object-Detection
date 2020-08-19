@@ -301,7 +301,10 @@ class roibatchLoader(data.Dataset):
 
     # Get image
     path       = data['image_path']
-    im = imread(path)
+    im = cv2.imread(path)
+    print(path)
+    if len(im.shape) != 2 and len(im.shape) != 3:
+        print('the above image call an error, check it !')
     
 
     if len(im.shape) == 2:
@@ -311,7 +314,7 @@ class roibatchLoader(data.Dataset):
     im = crop(im, data['boxes'], cfg.TRAIN.query_size)
     # flip the channel, since the original one using cv2
     # rgb -> bgr
-    # im = im[:,:,::-1]
+    im = im[:,:,::-1] #cv2, bgr, 转为rgb，因为使用pytorch预训练模型
     if random.randint(0,99)/100 > 0.5 and self.training:
       im = im[:, ::-1, :]
 

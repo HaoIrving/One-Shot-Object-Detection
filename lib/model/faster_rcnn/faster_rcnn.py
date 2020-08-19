@@ -20,10 +20,12 @@ import pdb
 from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 from model.utils.net_utils import *
 
+from .cam import CAM
+
 class match_block(nn.Module):
     def __init__(self, inplanes):
         super(match_block, self).__init__()
-
+        self.cam = CAM() ##
         self.sub_sample = False
 
         self.in_channels = inplanes
@@ -80,42 +82,46 @@ class match_block(nn.Module):
         batch_size, channels, height_d, width_d = detect.shape
 
 
-        #####################################find aim image similar object ####################################################
+        # #####################################find aim image similar object ####################################################
 
-        d_x = self.g(detect).view(batch_size, self.inter_channels, -1)
-        d_x = d_x.permute(0, 2, 1).contiguous()
+        # d_x = self.g(detect).view(batch_size, self.inter_channels, -1)
+        # d_x = d_x.permute(0, 2, 1).contiguous()
 
-        a_x = self.g(aim).view(batch_size, self.inter_channels, -1)
-        a_x = a_x.permute(0, 2, 1).contiguous()
+        # a_x = self.g(aim).view(batch_size, self.inter_channels, -1)
+        # a_x = a_x.permute(0, 2, 1).contiguous()
 
-        theta_x = self.theta(aim).view(batch_size, self.inter_channels, -1)
-        theta_x = theta_x.permute(0, 2, 1)
+        # theta_x = self.theta(aim).view(batch_size, self.inter_channels, -1)
+        # theta_x = theta_x.permute(0, 2, 1)
 
-        phi_x = self.phi(detect).view(batch_size, self.inter_channels, -1)
+        # phi_x = self.phi(detect).view(batch_size, self.inter_channels, -1)
 
         
 
-        f = torch.matmul(theta_x, phi_x)
+        # f = torch.matmul(theta_x, phi_x)
 
-        N = f.size(-1)
-        f_div_C = f / N
+        # N = f.size(-1)
+        # f_div_C = f / N
 
-        f = f.permute(0, 2, 1).contiguous()
-        N = f.size(-1)
-        fi_div_C = f / N
+        # f = f.permute(0, 2, 1).contiguous()
+        # N = f.size(-1)
+        # fi_div_C = f / N
 
-        non_aim = torch.matmul(f_div_C, d_x)
-        non_aim = non_aim.permute(0, 2, 1).contiguous()
-        non_aim = non_aim.view(batch_size, self.inter_channels, height_a, width_a)
-        non_aim = self.W(non_aim)
-        non_aim = non_aim + aim
+        # non_aim = torch.matmul(f_div_C, d_x)
+        # non_aim = non_aim.permute(0, 2, 1).contiguous()
+        # non_aim = non_aim.view(batch_size, self.inter_channels, height_a, width_a)
+        # non_aim = self.W(non_aim)
+        # non_aim = non_aim + aim
 
-        non_det = torch.matmul(fi_div_C, a_x)
-        non_det = non_det.permute(0, 2, 1).contiguous()
-        non_det = non_det.view(batch_size, self.inter_channels, height_d, width_d)
-        non_det = self.Q(non_det)
-        non_det = non_det + detect
+        # non_det = torch.matmul(fi_div_C, a_x)
+        # non_det = non_det.permute(0, 2, 1).contiguous()
+        # non_det = non_det.view(batch_size, self.inter_channels, height_d, width_d)
+        # non_det = self.Q(non_det)
+        # non_det = non_det + detect
 
+        ############################ CAM ################################
+
+        non_aim, non_det = self.cam(aim, detect)
+        
         ##################################### Response in chaneel weight ####################################################
 
         c_weight = self.ChannelGate(non_aim)
